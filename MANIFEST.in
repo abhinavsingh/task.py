@@ -1,0 +1,6 @@
+include requirements.txt
+include LICENSE
+include README.md
+include Makefile
+include examples/*.py
+include tests/*.py

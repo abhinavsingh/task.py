@@ -1,0 +1,9 @@
+.project
+.pydevproject
+.settings
+.coverage
+*.pyc
+dist
+cover
+task.py.egg-info
+
