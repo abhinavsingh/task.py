@@ -7,23 +7,13 @@
     :license: BSD, see LICENSE for more details.
 """
 import redis
+from .base import base
 
+@base
 def redis_brpop(t, key):
     r = redis.StrictRedis()
-    
     while True:
         if t.done:
             break
-        
-        try:
-            data = r.brpop(key)
-            t.send(data)
-        except KeyboardInterrupt, _: # pragma: no cover
-            break
-        finally:
-            t.stop()
-    
-    if t.exception:
-        raise t.exception
-    
-    return t.result
+        data = r.brpop(key)
+        t.send(data)
