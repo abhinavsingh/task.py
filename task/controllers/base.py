@@ -15,7 +15,7 @@ def base(ctrl):
             ctrl(t, *args, **kwargs)
         except KeyboardInterrupt, _: # pragma: no cover
             pass
-        except:
+        except: # pragma: no cover
             raise
         finally:
             t.stop()

@@ -42,6 +42,9 @@ class Task(Thread):
     def stopped(self):
         return self.event.is_set()
     
+    def recv(self, block=True, timeout=None):
+        return self.queue.get(block, timeout)
+    
     def send(self, data, block=True, timeout=None):
         self.queue.put(data, block, timeout)
 
