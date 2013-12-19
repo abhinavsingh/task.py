@@ -11,6 +11,14 @@ from Queue import Queue
 from functools import wraps
 
 class Task(Thread):
+    '''Run your task asynchronously and control/communicate with them.
+    
+    Initialize `Task` instance by passing the function to execute, 
+    optionally with arguments for the function. example:
+    
+    >>> t = Task(sleep_task, hello, world='world')
+    >>> t.start()
+    '''
     
     def __init__(self, func, *args, **kwargs):
         super(Task, self).__init__()
@@ -35,6 +43,7 @@ class Task(Thread):
             self.done = True
     
     def stop(self, join=True):
+        '''Set flag to signal stop to the underlying function.'''
         self.event.set()
         if join:
             self.join()
@@ -43,9 +52,11 @@ class Task(Thread):
         return self.event.is_set()
     
     def recv(self, block=True, timeout=None):
+        '''Used by running function to receive data queued from external threads.'''
         return self.queue.get(block, timeout)
     
     def send(self, data, block=True, timeout=None):
+        '''Queue up data for the running function.'''
         self.queue.put(data, block, timeout)
 
 def controller(ctrl, *args1, **kwargs1):
