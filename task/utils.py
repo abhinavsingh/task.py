@@ -16,5 +16,5 @@ def import_path(path): # pragma: no cover
     try:
         module = __import__(prefix, globals(), locals(), method, -1)
         return getattr(module, method) if suffix is not '*' else module
-    except AttributeError as e:
+    except AttributeError, e:
         raise ImportError(e)

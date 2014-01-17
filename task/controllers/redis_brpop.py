@@ -6,7 +6,11 @@
     :copyright: (c) 2013 by Abhinav Singh.
     :license: BSD, see LICENSE for more details.
 """
-import redis
+try:
+    import redis
+except ImportError, _:
+    pass
+
 from .base import base
 
 @base

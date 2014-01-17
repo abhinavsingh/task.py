@@ -7,7 +7,12 @@
     :license: BSD, see LICENSE for more details.
 """
 import time
-import redis
+
+try:
+    import redis
+except ImportError, _:
+    pass
+
 from .base import base
 
 @base
