@@ -9,6 +9,9 @@
 from threading import Thread, Event
 from Queue import Queue
 from functools import wraps
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Task(Thread):
     '''Run your task asynchronously and control/communicate with them.
@@ -41,6 +44,8 @@ class Task(Thread):
             self.exception = e
         finally:
             self.done = True
+            if self.exception:
+                logger.exception(e)
     
     def stop(self, join=True):
         '''Set flag to signal stop to the underlying function.'''
