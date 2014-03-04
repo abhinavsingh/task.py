@@ -15,4 +15,3 @@ __homepage__ = 'https://github.com/abhinavsingh/task.py'
 __license__ = 'BSD'
 
 from .task import Task, controller
-from .fsm import FSM

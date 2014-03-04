@@ -8,7 +8,7 @@
 """
 try:
     import redis
-except ImportError, _:
+except ImportError, _: # pragma: no cover
     pass
 
 from .base import base
