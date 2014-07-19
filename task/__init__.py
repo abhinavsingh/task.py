@@ -2,7 +2,7 @@
 """
     task
     ~~~~
-    
+
     :copyright: (c) 2013 by Abhinav Singh.
     :license: BSD, see LICENSE for more details.
 """

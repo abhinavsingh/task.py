@@ -13,8 +13,8 @@ Install
 Usage
 =====
 
-Basic use case of `task.py` is to run some unit of work asynchronously 
-(in a separate thread or process) while being able to control and 
+Basic use case of `task.py` is to run some unit of work asynchronously
+(in a separate thread or process) while being able to control and
 communicate with that unit of work. Example:
 
 Lets define a `simple_task` that:
@@ -32,25 +32,25 @@ Lets define a `simple_task` that:
 ...     return 'done.'
 ```
 
-Next, create a `Task` instance with `simple_task` as unit to work. 
+Next, create a `Task` instance with `simple_task` as unit to work.
 Additionally specify arguments expected by our `sleep_task`:
 
 ```
 >>> t1 = Task(simple_task, 'hello', world='world')
->>> 
+>>>
 >>> # start our task asynchronously
 >>> t1.start()
->>> 
+>>>
 >>> # after 1 second signal our task to stop
 >>> time.sleep(1)
 >>> t1.stop()
->>> 
+>>>
 >>> t1.done
 True
->>> 
+>>>
 >>> t1.result
 'done.'
->>> 
+>>>
 >>> t1.exception == None
 True
 ```
@@ -59,17 +59,17 @@ Lets create a new `Task` instance, this time skipping the expected arguments:
 
 ```
 >>> t2 = Task(simple_task)
->>> 
+>>>
 >>> # start our task asynchronously
 >>> t2.start()
->>> 
+>>>
 >>> t2.done
 True
->>> 
+>>>
 >>> # No result found
 >>> t2.result == None
 True
->>> 
+>>>
 >>> # our task raised an exception
 >>> t2.exception
 IndexError('tuple index out of range',)
@@ -78,10 +78,10 @@ IndexError('tuple index out of range',)
 Communicating with Task
 =======================
 
-`Task` provide a communication queue over which external threads can send data 
+`Task` provide a communication queue over which external threads can send data
 to the executing unit of work. Example:
 
-Lets define a `sleep_task` which will receive amount of time to sleep 
+Lets define a `sleep_task` which will receive amount of time to sleep
 over the communication queue:
 
 ```

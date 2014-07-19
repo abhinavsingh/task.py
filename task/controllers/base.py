@@ -2,11 +2,12 @@
 """
     task.controllers.base
     ~~~~~~~~~~~~~~~~~~~~~
-    
+
     :copyright: (c) 2013 by Abhinav Singh.
     :license: BSD, see LICENSE for more details.
 """
 from functools import wraps
+
 
 def base(ctrl):
     @wraps(ctrl)
@@ -19,7 +20,7 @@ def base(ctrl):
             raise
         finally:
             t.stop()
-        
+
         if t.exception:
             raise t.exception
         return t.result
