@@ -3,8 +3,8 @@ from task.controllers import wait_until_done
 
 
 @controller(wait_until_done)
-def exc(t, msg):
-    raise Exception(msg)
+def exc(t):
+    raise Exception(t.args[0])
 
 
 def raisesException(expected, func, *args, **kwargs):

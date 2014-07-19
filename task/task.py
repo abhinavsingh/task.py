@@ -3,7 +3,7 @@
     task.task
     ~~~~~~~~~
 
-    :copyright: (c) 2013 by Abhinav Singh.
+    :copyright: (c) 2014 by Abhinav Singh.
     :license: BSD, see LICENSE for more details.
 """
 from threading import Thread, Event
@@ -11,7 +11,7 @@ from Queue import Queue
 from functools import wraps
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('task')
 
 
 class Task(Thread):
@@ -71,7 +71,7 @@ class Task(Thread):
 
     def run(self):
         try:
-            self.result = self.func(self, *self.args, **self.kwargs)
+            self.result = self.func(self)
         except Exception, e:
             self.exception = e
         finally:
@@ -99,6 +99,7 @@ class Task(Thread):
 
 def controller(ctrl, *args1, **kwargs1):
     '''Controllers abstract out the pattern for communication with your `Task` instance.
+    Accepts controller callable and arguments for the controller.
 
     Use `controller` decorator to apply controller pattern to your `Task` callable. Example:
 
@@ -131,11 +132,43 @@ def controller(ctrl, *args1, **kwargs1):
     '''
 
     def outside(func):
+
         @wraps(func)
         def wrapper(*args2, **kwargs2):
             '''Callable args and kwargs.'''
             t = Task(func, *args2, **kwargs2)
-            t.start()
-            return ctrl(t, *args1, **kwargs1)
+
+            try:
+                t.start()
+                ctrl(t, *args1, **kwargs1)
+            except:
+                raise
+            finally:
+                t.stop()
+
+            if t.exception:
+                raise t.exception
+            return t.result
+
         return wrapper
+
     return outside
+
+
+class Pool(object):
+
+    def __init__(self, size, parallel, mapfunc, mapargs, reducer):
+        self.size = size
+        self.parallel = parallel
+
+        # function to map and args iter for each function
+        self.mapfunc = mapfunc
+        self.mapargs = mapargs
+        assert len(self.mapargs) == size, 'Map args must be size of pool %s' % size
+
+        # function that receives `Task` of completed mapfunc tasks
+        # to maintain pool parallelism new mapfunc task will be started immediately if required
+        self.reducer = reducer
+
+    def run(self):
+        pass

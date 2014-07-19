@@ -3,10 +3,10 @@
     task
     ~~~~
 
-    :copyright: (c) 2013 by Abhinav Singh.
+    :copyright: (c) 2014 by Abhinav Singh.
     :license: BSD, see LICENSE for more details.
 """
-VERSION = (0, 4)
+VERSION = (0, 5)
 __version__ = '.'.join(map(str, VERSION[0:2]))
 __description__ = 'Run your task asynchronously and control/communicate with them.'
 __author__ = 'Abhinav Singh'

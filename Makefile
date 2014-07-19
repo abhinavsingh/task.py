@@ -1,4 +1,4 @@
-.PHONY: all clean test package release
+.PHONY: all clean test package release examples
 
 all: clean test
 
@@ -15,3 +15,9 @@ package:
 
 release:
 	python setup.py sdist register upload
+
+examples:
+	PYTHONPATH=. python examples/simple_task.py
+	PYTHONPATH=. python examples/wait_until_done_task.py
+	PYTHONPATH=. python examples/exception_caught.py
+	#PYTHONPATH=. python examples/redis_brpop_task.py > /tmp/&

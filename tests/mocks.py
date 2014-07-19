@@ -1,24 +1,26 @@
 class MockRedisPubSub(object):
-    
+
     def subscribe(self, channel):
         if channel == "test":
             self.subscribed = True
-    
+
     def listen(self):
         if self.subscribed:
-            yield {"type":"message", "data":"done"}
-    
+            yield {"type": "message", "data": "done"}
+
     def unsubscribe(self, channel):
         self.subscribed = False
 
+
 class MockStrictRedis(object):
-    
+
     def brpop(self, key):
         if key == "test":
             return "done"
-    
+
     def pubsub(self):
         return MockRedisPubSub()
+
 
 class ToggleAfterNTimes(object):
 

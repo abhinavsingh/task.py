@@ -3,8 +3,9 @@ from unittest import TestCase
 from mock import Mock
 from task import Task
 
+
 class TestTask(TestCase):
-    
+
     def test_func_called(self):
         func = Mock()
         func.return_value = "ok"
@@ -12,14 +13,14 @@ class TestTask(TestCase):
         t.run()
         func.assert_called_once_with(t)
         self.assertEqual(t.result, "ok")
-    
+
     def test_func_exc_caught(self):
         def func(t):
             raise Exception("ok")
         t = Task(func, "hello", hello="world")
         t.run()
         self.assertEqual(t.exception.message, "ok")
-    
+
     def test_func_can_recv_data(self):
         def func(t):
             return t.queue.get()
@@ -27,7 +28,7 @@ class TestTask(TestCase):
         t.send("ok")
         t.run()
         self.assertEqual(t.result, "ok")
-    
+
     def test_func_is_stopped(self):
         def func(t):
             while not t.stopped():

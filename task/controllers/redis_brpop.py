@@ -2,22 +2,21 @@
 """
     task.controllers.redis_brpop
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    :copyright: (c) 2013 by Abhinav Singh.
+
+    :copyright: (c) 2014 by Abhinav Singh.
     :license: BSD, see LICENSE for more details.
 """
-try:
-    import redis
-except ImportError, _: # pragma: no cover
-    pass
+import redis
 
-from .base import base
 
-@base
-def redis_brpop(t, key):
+def redis_brpop(t, key, timeout=1):
+    '''`Task` controller thats polls a redis key and sends received data to underlying task callable.'''
     r = redis.StrictRedis()
+
     while True:
         if t.done:
             break
-        data = r.brpop(key)
-        t.send(data)
+
+        data = r.brpop(key, timeout=timeout)
+        if data:
+            t.send(data)

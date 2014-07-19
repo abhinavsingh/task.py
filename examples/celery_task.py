@@ -11,6 +11,7 @@ from task.controllers import redis_brpop
 
 celery = Celery('celery_task', broker='redis://', backend='redis://')
 
+
 @celery.task
 @controller(redis_brpop, "celery_job_task")
 def job(t):
@@ -22,10 +23,10 @@ if __name__ == '__main__':
         print '** Starting celery job, now pass data to this task by calling:'
         print '** $ python %s <data>' % sys.argv[0]
         r = job.delay()
-        
+
         while not r.ready():
             time.sleep(1)
-        
+
         print r.get()
     else:
         r = redis.StrictRedis()
