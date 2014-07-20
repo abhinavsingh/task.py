@@ -1,3 +1,4 @@
+#import random
 from task import Pool
 
 
@@ -17,16 +18,24 @@ class Inputs(object):
         return (m,), {}
 
 
-def receiver(t, *args, **kwargs):
-    print args[0]
-    assert t.args[0] == args[0]
+class Receiver(object):
+
+    def __init__(self):
+        self.rcvd = list()
+
+    def __call__(self, t, *args, **kwargs):
+        assert t.args[0] == args[0]
+        self.rcvd.append(args[0])
 
 
 def simple_task(t, idx):
+    #random.randint(0, 2)
     return idx
 
 if __name__ == '__main__':
-    size = 100
-    parallel = 22
-    pool = Pool(size, parallel, simple_task, Inputs(size), receiver)
+    size = 1000
+    parallel = 10
+    pool = Pool(size, parallel, simple_task, Inputs(size), Receiver())
     pool.run()
+    pool.receiver.rcvd.sort()
+    assert pool.receiver.rcvd == range(1, size+1)

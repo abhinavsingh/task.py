@@ -178,22 +178,19 @@ class Pool(object):
         # TODO: replace with select loop for big pool optimization
         for t, args, kwargs in self.running:
             if t.done:
-                print 'done', args, kwargs
                 self.running.remove((t, args, kwargs),)
                 self.receiver(t, *args, **kwargs)
 
     def run(self):
         for idx in xrange(self.size):
+            #print 'Pool size: %s' % len(self.running)
             args, kwargs = self.inputs.next()
 
-            print 'starting', args, kwargs
             t = Task(self.func, *args, **kwargs)
             t.start()
 
             self.running.append((t, args, kwargs),)
             while len(self.running) >= self.parallel:
-                print 'waiting'
                 self.scan()
-                print 'done waiting'
 
         self.waitForAll()
