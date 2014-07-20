@@ -1,3 +1,4 @@
+import sys
 from task import Pool
 
 rcvd = list()
@@ -24,7 +25,13 @@ def receiver(t):
 
 if __name__ == '__main__':
     size = 1000
+    if len(sys.argv) >= 2:
+        size = int(sys.argv[1])
+
     parallel = 100
+    if len(sys.argv) >= 3:
+        parallel = int(sys.argv[2])
+
     pool = Pool(size, parallel, simple_task, inputs(size), receiver)
     pool.run()
 
