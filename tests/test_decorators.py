@@ -13,7 +13,7 @@ class TestDecorator(TestCase):
 
         @controller(ctrl, "hello")
         def func(t):
-            data = t.queue.get()
+            data = t.recv()
             assert data == "hello"
             return t.args[0]
 

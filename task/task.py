@@ -7,15 +7,15 @@
     :license: BSD, see LICENSE for more details.
 """
 import time
-from threading import Thread, Event
-from Queue import Queue
+import multiprocessing
+import Queue
 from functools import wraps
 import logging
 
 logger = logging.getLogger('task')
 
 
-class Task(Thread):
+class Task(multiprocessing.Process):
     '''Run your task asynchronously and control/communicate with them.
 
     Initialize a `Task` instance by passing the your callable to execute,
@@ -62,22 +62,50 @@ class Task(Thread):
         self.args = args
         self.kwargs = kwargs
 
-        self.result = None
-        self.exception = None
-        self.done = False
+        self.event = multiprocessing.Event()
+        self.queue = multiprocessing.Queue()
 
-        self.event = Event()
-        self.queue = Queue()
+        self.state = multiprocessing.Queue()
+        self._result = None
+        self._exception = None
+        self._done = False
 
     def run(self):
         try:
-            self.result = self.func(self)
+            self._result = self.func(self)
         except Exception, e:
-            self.exception = e
+            self._exception = e
         finally:
-            self.done = True
+            self._done = True
+            self.state.put((self._result, self._exception, self._done),)
             if self.exception:
                 logger.exception(e)
+
+    def getState(self):
+        if not self._done:
+            while not self._done:
+                try:
+                    self._result, self._exception, self._done = self.state.get(timeout=0.1)
+                except Queue.Empty:
+                    pass
+
+    @property
+    def result(self):
+        self.getState()
+        return self._result
+
+    @property
+    def exception(self):
+        self.getState()
+        return self._exception
+
+    @property
+    def done(self):
+        try:
+            self._result, self._exception, self._done = self.state.get_nowait()
+        except Queue.Empty:
+            pass
+        return self._done
 
     def stop(self, join=True):
         '''Set flag to signal stop to the underlying function.'''
@@ -222,10 +250,7 @@ class Chain(object):
             t = Task(self.func, prev)
             t.start()
             prev = t
-
-        while True:
-            if t.done:
-                break
-            time.sleep(0.1)
-
+            # TODO: Move to event based for performance
+            while not t.done:
+                time.sleep(0.1)
         return t.recv()
