@@ -1,3 +1,4 @@
+#import time
 #import random
 from task import Pool
 
@@ -28,13 +29,14 @@ class Receiver(object):
         self.rcvd.append(args[0])
 
 
-def simple_task(t, idx):
-    #random.randint(0, 2)
-    return idx
+def simple_task(t):
+    #s = random.random()
+    #time.sleep(s)
+    return t.args[0]
 
 if __name__ == '__main__':
-    size = 1000
-    parallel = 10
+    size = 10000
+    parallel = 1000
     pool = Pool(size, parallel, simple_task, Inputs(size), Receiver())
     pool.run()
     pool.receiver.rcvd.sort()
