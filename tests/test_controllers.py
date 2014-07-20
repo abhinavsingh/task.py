@@ -27,7 +27,7 @@ class TestControllers(TestCase):
     def test_redis_brpop(self):
         @controller(redis_brpop, "test")
         def func(t):
-            return t.queue.get()
+            return t.recv()
 
         self.assertEqual(func(), "done")
 
@@ -35,6 +35,6 @@ class TestControllers(TestCase):
     def test_redis_pubsub(self):
         @controller(redis_pubsub, "test")
         def func(t):
-            return t.queue.get()['data']
+            return t.recv()['data']
 
         self.assertEqual(func(), "done")

@@ -15,7 +15,7 @@ celery = Celery('celery_task', broker='redis://', backend='redis://')
 @celery.task
 @controller(redis_brpop, "celery_job_task")
 def job(t):
-    data = t.queue.get()
+    data = t.recv()
     return data[1]
 
 if __name__ == '__main__':

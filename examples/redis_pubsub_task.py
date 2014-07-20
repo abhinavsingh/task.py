@@ -11,7 +11,7 @@ def pubsub_task(t):
     ret = None
     while True:
         try:
-            data = t.queue.get(timeout=0.1)
+            data = t.recv(timeout=0.1)
             ret = data['data']
             break
         except Queue.Empty:

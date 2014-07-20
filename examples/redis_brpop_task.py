@@ -11,7 +11,7 @@ def brpop_task(t):
     ret = None
     while not t.stopped():
         try:
-            data = t.queue.get(timeout=0.1)
+            data = t.recv(timeout=0.1)
             ret = data[1]
             break
         except Queue.Empty:

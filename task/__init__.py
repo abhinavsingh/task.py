@@ -14,4 +14,4 @@ __author_email__ = 'mailsforabhinav@gmail.com'
 __homepage__ = 'https://github.com/abhinavsingh/task.py'
 __license__ = 'BSD'
 
-from .task import Task, controller, Pool
+from .task import Task, controller, Pool, Chain

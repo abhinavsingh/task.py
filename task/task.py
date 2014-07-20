@@ -170,16 +170,11 @@ class Pool(object):
         self.receiver = receiver
         self.running = list()
 
-    def waitForAll(self):
-        while len(self.running) > 0:
-            self.scan()
-
     def scan(self):
-        # TODO: replace with select loop for big pool optimization
-        for t, args, kwargs in self.running:
+        for t in self.running:
             if t.done:
-                self.running.remove((t, args, kwargs),)
-                self.receiver(t, *args, **kwargs)
+                self.running.remove(t)
+                self.receiver(t)
 
     def run(self):
         for args, kwargs in self.inputs:
@@ -187,8 +182,50 @@ class Pool(object):
             t = Task(self.func, *args, **kwargs)
             t.start()
 
-            self.running.append((t, args, kwargs),)
+            self.running.append(t)
             while len(self.running) >= self.parallel:
                 self.scan()
 
-        self.waitForAll()
+        while len(self.running) > 0:
+            self.scan()
+
+
+class Chain(object):
+
+    def __init__(self, size, func, feed):
+        self.size = size
+        self.feed = feed
+        self.func = self.chain(self.feed)(func)
+
+    @staticmethod
+    def chain(feed):
+        def outer(func):
+
+            @wraps(func)
+            def wrapper(t):
+                # wait until we have data from prev task in chain
+                prev = t.args[0]
+                t.prev = prev.recv() if prev is not None else feed
+
+                # process and send data to next task in chain
+                t.args = tuple(list(t.args)[1:])
+                r = func(t)
+                t.send(r)
+                return r
+            return wrapper
+
+        return outer
+
+    def run(self):
+        prev = None
+        for i in xrange(self.size):
+            t = Task(self.func, prev)
+            t.start()
+            prev = t
+
+        while True:
+            if t.done:
+                break
+            time.sleep(0.1)
+
+        return t.recv()

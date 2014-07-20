@@ -23,7 +23,7 @@ class TestTask(TestCase):
 
     def test_func_can_recv_data(self):
         def func(t):
-            return t.queue.get()
+            return t.recv()
         t = Task(func)
         t.send("ok")
         t.run()
