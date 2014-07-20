@@ -182,10 +182,8 @@ class Pool(object):
                 self.receiver(t, *args, **kwargs)
 
     def run(self):
-        for idx in xrange(self.size):
+        for args, kwargs in self.inputs:
             #print 'Pool size: %s' % len(self.running)
-            args, kwargs = self.inputs.next()
-
             t = Task(self.func, *args, **kwargs)
             t.start()
 
