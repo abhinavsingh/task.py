@@ -14,7 +14,7 @@ class MockRedisPubSub(object):
 
 class MockStrictRedis(object):
 
-    def brpop(self, key):
+    def brpop(self, key, **kwargs):
         if key == "test":
             return "done"
 

@@ -6,6 +6,7 @@
     :copyright: (c) 2014 by Abhinav Singh.
     :license: BSD, see LICENSE for more details.
 """
+import time
 from threading import Thread, Event
 from Queue import Queue
 from functools import wraps
@@ -29,7 +30,6 @@ class Task(Thread):
     >>> t.start()
 
     >>> # let the task finish
-    >>> import time
     >>> while not t.done:
     ...     time.sleep(0.1)
 
@@ -157,18 +157,43 @@ def controller(ctrl, *args1, **kwargs1):
 
 class Pool(object):
 
-    def __init__(self, size, parallel, mapfunc, mapargs, reducer):
+    def __init__(self, size, parallel, func, inputs, receiver):
         self.size = size
         self.parallel = parallel
 
         # function to map and args iter for each function
-        self.mapfunc = mapfunc
-        self.mapargs = mapargs
-        assert len(self.mapargs) == size, 'Map args must be size of pool %s' % size
+        self.func = func
+        self.inputs = inputs
 
-        # function that receives `Task` of completed mapfunc tasks
+        # function that receives `Task` of completed func tasks
         # to maintain pool parallelism new mapfunc task will be started immediately if required
-        self.reducer = reducer
+        self.receiver = receiver
+        self.running = list()
+
+    def waitForAll(self):
+        while len(self.running) > 0:
+            self.scan()
+
+    def scan(self):
+        # TODO: replace with select loop for big pool optimization
+        for t, args, kwargs in self.running:
+            if t.done:
+                print 'done', args, kwargs
+                self.running.remove((t, args, kwargs),)
+                self.receiver(t, *args, **kwargs)
 
     def run(self):
-        pass
+        for idx in xrange(self.size):
+            args, kwargs = self.inputs.next()
+
+            print 'starting', args, kwargs
+            t = Task(self.func, *args, **kwargs)
+            t.start()
+
+            self.running.append((t, args, kwargs),)
+            while len(self.running) >= self.parallel:
+                print 'waiting'
+                self.scan()
+                print 'done waiting'
+
+        self.waitForAll()
